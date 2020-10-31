@@ -27,8 +27,10 @@ import com.werb.pickphotoview.PickPhotoView;
 import com.werb.pickphotoview.util.PickConfig;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String base64String = null;
+    private String uploadFile;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -100,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 && data != null){
             ArrayList<String> selectPaths =
                     (ArrayList<String>) data.getSerializableExtra(PickConfig.INSTANCE.getINTENT_IMG_LIST_SELECT());
+            uploadFile = selectPaths.get(0);
             Bitmap bmp = BitmapFactory.decodeFile(selectPaths.get(0));
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -139,7 +143,36 @@ public class MainActivity extends AppCompatActivity {
                 map.put("img",base64String);
                 return map;
             }
+
+
+
         };
         mainApp.queue.add(request);
     }
+
+    public void uploadFile(View view) {
+        new Thread(){
+            @Override
+            public void run() {
+                upload();
+            }
+        }.start();
+
+
+    }
+
+    private void upload(){
+        try {
+            MultipartUtil mu = new MultipartUtil("http://10.0.100.191/brad04.php");
+            mu.readyToConnect();
+            mu.addFilePart("upload", new File(uploadFile));
+            List<String> ret = mu.finish();
+            for (String line : ret){
+                Log.v("bradlog", "ret => " + line);
+            }
+        }catch (Exception e){
+            Log.v("bradlog", e.toString());
+        }
+    }
+
 }
