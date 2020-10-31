@@ -26,6 +26,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.werb.pickphotoview.PickPhotoView;
 import com.werb.pickphotoview.util.PickConfig;
 
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
@@ -170,6 +172,37 @@ public class MainActivity extends AppCompatActivity {
             for (String line : ret){
                 Log.v("bradlog", "ret => " + line);
             }
+        }catch (Exception e){
+            Log.v("bradlog", e.toString());
+        }
+    }
+
+    public void fetchPhotoFromServer(View view) {
+        StringRequest request = new StringRequest(
+                Request.Method.POST,
+                "http://10.0.100.191/brad02.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.v("bradlog", response);
+                        parseJSON(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.v("bradlog", error.toString());
+                    }
+                }
+        );
+
+        mainApp.queue.add(request);
+    }
+
+    private void parseJSON(String json){
+        try{
+            JSONObject row = new JSONObject(json);
+            String base64String = row.getString("img");
         }catch (Exception e){
             Log.v("bradlog", e.toString());
         }

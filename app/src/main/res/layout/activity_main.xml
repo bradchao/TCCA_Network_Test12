@@ -14,6 +14,12 @@
         android:text="Photo"
         android:onClick="fetchPhoto"
         />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Photo from Server"
+        android:onClick="fetchPhotoFromServer"
+        />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
