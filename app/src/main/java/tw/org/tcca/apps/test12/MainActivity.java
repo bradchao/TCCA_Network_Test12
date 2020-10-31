@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,15 +16,24 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.werb.pickphotoview.PickPhotoView;
 import com.werb.pickphotoview.util.PickConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private ImageView img;
+    private MainApp mainApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +68,16 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
+    private ProgressDialog progressDialog;
+
     private void init(){
+        mainApp = (MainApp)getApplication();
         img = findViewById(R.id.img);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Waiting......");
+        progressDialog.setCancelable(false);
+
     }
 
     public void fetchPhoto(View view) {
@@ -90,11 +108,38 @@ public class MainActivity extends AppCompatActivity {
             base64String = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
             img.setImageBitmap(bmp);
-            Log.v("bradlog", base64String);
+            //Log.v("bradlog", base64String);
         }
     }
 
     public void upload(View view) {
-
+        progressDialog.show();
+        StringRequest request = new StringRequest(Request.Method.POST,
+                "http://10.0.100.191/brad03.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        progressDialog.dismiss();
+                        Log.v("bradlog", response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progressDialog.dismiss();
+                        Log.v("bradlog", error.toString());
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> map = new HashMap<>();
+                map.put("account","brad" + (int)(Math.random()*100000));
+                map.put("passwd","123");
+                map.put("realname","123");
+                map.put("img",base64String);
+                return map;
+            }
+        };
+        mainApp.queue.add(request);
     }
 }
