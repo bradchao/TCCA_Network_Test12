@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import com.werb.pickphotoview.PickPhotoView;
 import com.werb.pickphotoview.util.PickConfig;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -71,20 +73,28 @@ public class MainActivity extends AppCompatActivity {
                 .start();
     }
 
+    private String base64String = null;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.v("bradlog", requestCode + ":" +resultCode);
 
         if (resultCode == 21793
                 && data != null){
             ArrayList<String> selectPaths =
                     (ArrayList<String>) data.getSerializableExtra(PickConfig.INSTANCE.getINTENT_IMG_LIST_SELECT());
             Bitmap bmp = BitmapFactory.decodeFile(selectPaths.get(0));
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            base64String = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
             img.setImageBitmap(bmp);
+            Log.v("bradlog", base64String);
         }
     }
 
     public void upload(View view) {
+        
     }
 }
