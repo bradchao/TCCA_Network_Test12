@@ -203,6 +203,9 @@ public class MainActivity extends AppCompatActivity {
         try{
             JSONObject row = new JSONObject(json);
             String base64String = row.getString("img");
+            byte[] byteData = Base64.decode(base64String, Base64.DEFAULT);
+            Bitmap bmp = BitmapFactory.decodeByteArray(byteData, 0, byteData.length);
+            img.setImageBitmap(bmp);
         }catch (Exception e){
             Log.v("bradlog", e.toString());
         }
