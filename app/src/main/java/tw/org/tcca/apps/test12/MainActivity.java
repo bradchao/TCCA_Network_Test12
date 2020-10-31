@@ -8,9 +8,12 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.werb.pickphotoview.PickPhotoView;
 import com.werb.pickphotoview.util.PickConfig;
@@ -18,6 +21,7 @@ import com.werb.pickphotoview.util.PickConfig;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    private ImageView img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
-
+        img = findViewById(R.id.img);
     }
 
     public void fetchPhoto(View view) {
@@ -76,9 +80,8 @@ public class MainActivity extends AppCompatActivity {
                 && data != null){
             ArrayList<String> selectPaths =
                     (ArrayList<String>) data.getSerializableExtra(PickConfig.INSTANCE.getINTENT_IMG_LIST_SELECT());
-            for (int i=0; i<selectPaths.size(); i++){
-                Log.v("bradlog", selectPaths.get(i));
-            }
+            Bitmap bmp = BitmapFactory.decodeFile(selectPaths.get(0));
+            img.setImageBitmap(bmp);
         }
     }
 
