@@ -13,6 +13,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.werb.pickphotoview.PickPhotoView;
+import com.werb.pickphotoview.util.PickConfig;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,7 +70,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.v("bradlog", "OK");
+        Log.v("bradlog", requestCode + ":" +resultCode);
+
+        if (resultCode == 21793
+                && data != null){
+            ArrayList<String> selectPaths =
+                    (ArrayList<String>) data.getSerializableExtra(PickConfig.INSTANCE.getINTENT_IMG_LIST_SELECT());
+            for (int i=0; i<selectPaths.size(); i++){
+                Log.v("bradlog", selectPaths.get(i));
+            }
+        }
     }
 
     public void upload(View view) {
